@@ -1,0 +1,7 @@
+{
+    "jinja-lsp.templates": "./server/templates",
+    "jinja-lsp.backend": [
+        "./main.py"
+    ],
+    "jinja-lsp.lang": "python"
+}

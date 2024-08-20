@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style/main.css') }}">
+    <title>re-shell</title>
+</head>
+
+<body>
+
+    {% block main %}
+
+    {% endblock main %}
+
+    <script src="{{ url_for('static', filename='custom-elements/re-shell.js') }}"></script>
+    <script src="{{ url_for('static', filename='custom-elements/re-action.js') }}"></script>
+    <script src="{{ url_for('static', filename='custom-elements/re-target.js') }}"></script>
+</body>
+
+</html>

@@ -1,0 +1,25 @@
+{% include "base.jinja" %}
+
+{% block main %}
+
+<h1>Users</h1>
+
+<re-shell>
+    <form action="" method="post">
+        <input type="text" name="name" placeholder="name">
+    </form>
+
+    <re-target name="users-list">
+        {% include "partials/users-list.jinja" %}
+    </re-target>
+
+    <re-action role="button" href="/random-number">Get random number</re-action>
+    :
+    <re-target name="random-number">&hellip;</re-target>
+
+    <re-target>
+        <re-action role="button" href="/random-name">Get random name</re-action>
+    </re-target>
+</re-shell>
+
+{% endblock main %}

@@ -1,0 +1,26 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 8px;
+    font-family: sans-serif;
+}
+
+:where(h1, h2, h3, h4) {
+    font-family: Georgia, "Times New Roman", Times, serif;
+}
+
+[role="button"] {
+    display: inline-block;
+    border-radius: 1px;
+    padding-block: 0.125em;
+    padding-inline: 0.35em;
+    line-height: 1;
+    border: 1px currentColor solid;
+    cursor: pointer;
+}
+[role="button"]:active{
+    background-color: #eee;
+}

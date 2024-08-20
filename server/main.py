@@ -1,33 +1,49 @@
 from flask import Flask, request, render_template
-from random import randint
+from random import randint, choice
 import uuid
 
 app = Flask(__name__)
 
-# Initial list of items
-# items = [uuid.uuid4() for i in range(3)]
-items = {str(uuid.uuid4()): {"name": ""} for i in range(3)}
+users = {str(uuid.uuid4()): {"name": ""} for i in range(3)}
 
 
-@app.route("/", methods=["GET", "POST"])
+@app.get("/")
 def index():
-    if request.method == "GET":
-        return render_template("index.html", items=items)
+    return render_template("index.jinja", users=users)
 
-    elif request.method == "POST":
-        form_data = request.form
-        name = form_data.get("name")
 
-        items[str(uuid.uuid4())] = {"name": name}
+@app.post("/")
+def newUser():
+    form_data = request.form
+    name = form_data.get("name")
 
-        return render_template("list.html", items=items)
+    users[str(uuid.uuid4())] = {"name": name}
+
+    return render_template("partials/users-list.jinja", users=users)
 
 
 @app.delete("/<id>")
 def deleteUser(id):
-    if items:
-        del items[id]
-    return render_template("list.html", items=items)
+    if users:
+        del users[id]
+
+    return render_template("partials/users-list.jinja", users=users)
+
+
+@app.get("/random-number")
+def testPost():
+    n = randint(0, 1024)
+
+    return render_template("partials/number.jinja", number=n)
+
+
+@app.get("/random-name")
+def randomName():
+    name = choice(["Bob", "Mob", "Lisa", "Pisa", "Jon", "Job"])
+
+    print(name)
+
+    return render_template("partials/name.jinja", name=name)
 
 
 if __name__ == "__main__":
