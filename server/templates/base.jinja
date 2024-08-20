@@ -5,6 +5,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='style/main.css') }}">
+
+    {#
+    <script src="{{ url_for('static', filename='htmx.js') }}"></script> #}
+    {#
+    <script src="https://unpkg.com/htmx.org@2.0.2/dist/htmx.js"
+        integrity="sha384-yZq+5izaUBKcRgFbxgkRYwpHhHHCpp5nseXp0MEQ1A4MTWVMnqkmcuFez8x5qfxr"
+        crossorigin="anonymous"></script> #}
+    {#
+    <script src="https://unpkg.com/htmx.org@1.9.12/dist/ext/debug.js"></script> #}
+
+
     <title>re-shell</title>
 </head>
 
@@ -13,6 +24,7 @@
     {% block main %}
 
     {% endblock main %}
+
 
     <script src="{{ url_for('static', filename='custom-elements/re-shell.js') }}"></script>
     <script src="{{ url_for('static', filename='custom-elements/re-action.js') }}"></script>

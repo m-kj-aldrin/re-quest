@@ -2,25 +2,27 @@
 
 {% block main %}
 
+{# <form hx-post="/" hx-target="tbody" hx-swap="innerHTML" hx-ext="debug">
+    <label>
+        <span>name</span>:
+        <input type="text" name="name">
+    </label>
+</form>
+
+<table>
+    <thead>
+        <tr>
+            {% for key in table_columns %}
+            <th>{{ key }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% include "partials/users-rows.jinja" %}
+    </tbody>
+</table> #}
+
 <h1>Users</h1>
-
-{# <re-shell clear-form>
-    <form action="" method="post">
-        <input type="text" name="name" placeholder="name">
-    </form>
-
-    <re-target name="users-list">
-        {% include "partials/users-list.jinja" %}
-    </re-target>
-
-    <re-action role="button" href="/random-number">Get random number</re-action>
-    :
-    <re-target name="random-number">&hellip;</re-target>
-
-    <re-target>
-        <re-action role="button" href="/random-name">Get random name</re-action>
-    </re-target>
-</re-shell> #}
 
 <re-shell>
 
