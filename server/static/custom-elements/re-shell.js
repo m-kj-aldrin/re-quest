@@ -19,11 +19,23 @@ class ReShell extends HTMLElement {
 
             if (response.ok) {
                 let responseString = await response.text();
-                let doc = new DOMParser().parseFromString(
-                    responseString,
-                    "text/html"
-                );
-                this.reTarget(doc);
+                // let doc = new DOMParser().parseFromString(
+                //     `<body><template>${responseString}</template></body>`,
+                //     "text/html"
+                // ).querySelector("template");
+                let template = document.createElement("template");
+                template.innerHTML = responseString;
+                let doc = template.content;
+
+                console.log(doc.querySelector("tr"));
+
+                // console.log(doc);
+
+                // this.reTarget(doc);
+
+                if (this.hasAttribute("clear-form")) {
+                    form.reset();
+                }
             }
         });
 
@@ -59,12 +71,31 @@ class ReShell extends HTMLElement {
         reTargetableElements.forEach((element) => {
             let targetName = element.getAttribute("target");
             let target = this.querySelector(`re-target[name="${targetName}"]`);
+            if (target.hasAttribute("selector")) {
+                target = target.querySelector(target.getAttribute("selector"));
+                // console.log(target);
+            }
+
             let shouldConsume = target.hasAttribute("consume");
 
+            if (element.tagName.toLowerCase() == "re-fragment") {
+                let children = element.children;
+
+                console.log(element);
+
+                console.log(children);
+
+                if (shouldConsume) {
+                    // target.replaceChildren(element);
+                } else {
+                    // target.replaceChildren(...children);
+                }
+            }
+
             if (shouldConsume) {
-                target.replaceChildren(element);
+                // target.replaceChildren(element);
             } else {
-                target.replaceChildren(element.cloneNode(true));
+                // target.replaceChildren(element.cloneNode(true));
             }
         });
     }

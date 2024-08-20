@@ -4,7 +4,7 @@
 
 <h1>Users</h1>
 
-<re-shell>
+{# <re-shell clear-form>
     <form action="" method="post">
         <input type="text" name="name" placeholder="name">
     </form>
@@ -20,6 +20,36 @@
     <re-target>
         <re-action role="button" href="/random-name">Get random name</re-action>
     </re-target>
+</re-shell> #}
+
+<re-shell>
+
+
+    <form action="" method="post">
+        <label>
+            <span>name</span>:
+            <input type="text" name="name">
+        </label>
+    </form>
+
+    <br>
+
+    <re-target name="users-rows" selector="tbody">
+        <table>
+            <thead>
+                <tr>
+                    {% for key in table_columns %}
+                    <th>{{ key }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% include "partials/users-rows.jinja" %}
+            </tbody>
+        </table>
+    </re-target>
+
+
 </re-shell>
 
 {% endblock main %}

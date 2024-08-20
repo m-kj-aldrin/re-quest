@@ -58,9 +58,6 @@ class ReAction extends HTMLElement {
             }
         );
 
-        // Log the formatted JSON string for debugging
-        console.log("Formatted JSON String:", jsonString);
-
         return jsonString;
     }
 

@@ -1,0 +1,13 @@
+<re-fragment target="users-rows">
+    <tbody>
+        {% for user in users %}
+        <tr>
+            {% for key in table_columns %}
+            <td>
+                {{ user[key] }}
+            </td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</re-fragment>

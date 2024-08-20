@@ -21,6 +21,24 @@ body {
     border: 1px currentColor solid;
     cursor: pointer;
 }
-[role="button"]:active{
+[role="button"]:active {
     background-color: #eee;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+table thead {
+    border-bottom: 1px currentColor solid;
+}
+
+table tr {
+    border-bottom: 1px currentColor solid;
+}
+
+table td:not(:last-of-type) {
+    border-right: 1px currentColor solid;
+}
+table td {
 }
