@@ -667,12 +667,19 @@ var htmx = (function () {
                     "</template></body>"
             );
 
+            console.log(doc.body.innerHTML);
+
             fragment = /** @type DocumentFragmentWithTitle */ (
                 doc.querySelector("template").content
             );
 
-            console.log(fragment.children);
-            
+            // console.log(fragment.children);
+            // fragment.children
+            // for (const element1 of fragment.children) {
+            //     for (const element2 of element1.children) {
+            //         console.log(element2);
+            //     }
+            // }
 
             // extract title into fragment for later processing
             fragment.title = doc.title;

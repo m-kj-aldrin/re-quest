@@ -6,6 +6,9 @@
             {{ user[key] }}
         </td>
         {% endfor %}
+        <td>
+            <re-action role="button" method="delete" href="/{{user.id}}">delete</re-action>
+        </td>
     </tr>
     {% endfor %}
 </re-fragment>

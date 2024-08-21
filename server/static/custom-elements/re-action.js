@@ -3,7 +3,7 @@ class ReActionEvent extends Event {
 
     /**
      * @param {Object} data
-     * @param {Document} data.doc
+     * @param {DocumentFragment[]} data.docs
      */
     constructor(data) {
         super("re-action", { bubbles: true });
@@ -22,22 +22,99 @@ class ReAction extends HTMLElement {
         this.addEventListener("click", this.action);
     }
 
+    /**
+     * @param {string} partial
+     * @returns {TargetContent[]}
+     */
+    #extractFragments(partial) {
+        const result = [];
+        const reFragmentRegex =
+            /<re-fragment target="([^"]+)">(.*?)<\/re-fragment>/gs;
+        let match;
+        while ((match = reFragmentRegex.exec(partial)) !== null) {
+            const target = match[1];
+            const content = match[2].trim();
+            result.push({ target, content });
+            partial = partial.replace(match[0], "");
+        }
+
+        const targetElementRegex =
+            /<([a-zA-Z0-9-]+)[^>]*target="([^"]+)"[^>]*>(.*?)<\/\1>/gs;
+        while ((match = targetElementRegex.exec(partial)) !== null) {
+            const tag = match[1];
+            const target = match[2];
+            const outerHtml = match[0];
+            result.push({ target, content: outerHtml });
+        }
+
+        return result;
+    }
+
+    /**
+     * @param {TargetContent} o
+     */
+    makeFragment(o) {
+        const frag = document.createDocumentFragment();
+        frag.title = o.target;
+        let parsed = this.#parseHTML(o.content);
+
+        frag.replaceChildren(...parsed.children);
+
+        return frag;
+    }
+
+    #parseHTML(str) {
+        let parser = (s) => new DOMParser().parseFromString(s, "text/html");
+        const doc = parser(
+            "<body><template>" + str + "</template></body>"
+        ).querySelector("template").content;
+        return doc;
+    }
+
+    /**
+     * @param {Object} o
+     * @param {string} o.path
+     * @param {string} o.method
+     * @param {BodyInit} o.body
+     */
+    #fetch({ path, method, body }) {
+        let response = fetch(path, {
+            method,
+            body,
+        });
+
+        return response;
+    }
     async action() {
         let href = this.getAttribute("href") ?? "";
         let method = this.getAttribute("method") ?? "get";
         let data = method == "get" ? undefined : this.#getData();
 
-        let response = await this.#fetch({ href, method, body: data });
+        let response = await this.#fetch({ path: href, method, body: data });
 
         if (response.ok) {
             let responseString = await response.text();
-            let doc = new DOMParser().parseFromString(
-                responseString,
-                "text/html"
-            );
+            let extracted = this.#extractFragments(responseString);
+            let fragments = extracted.map(this.makeFragment.bind(this));
 
-            this.#send(doc);
+            this.#send(fragments);
+
+            // this.reTarget(fragments);
+
+            // if (this.hasAttribute("clear-form")) {
+            //     form.reset();
+            // }
         }
+
+        // if (response.ok) {
+        //     let responseString = await response.text();
+        //     // let doc = new DOMParser().parseFromString(
+        //     //     responseString,
+        //     //     "text/html"
+        //     // );
+
+        //     this.#send(doc);
+        // }
     }
 
     convertToJson(jsObjectString) {
@@ -71,30 +148,30 @@ class ReAction extends HTMLElement {
     }
 
     /**
-     * @param {Document} doc
+     * @param {DocumentFragment[]} docs
      */
-    #send(doc) {
-        this.dispatchEvent(new ReActionEvent({ doc }));
+    #send(docs) {
+        this.dispatchEvent(new ReActionEvent({ docs }));
     }
 
-    /**
-     * @param {Object} o
-     * @param {string} o.href
-     * @param {string} o.method
-     * @param {BodyInit} o.body
-     */
-    #fetch({ href, method, body }) {
-        let headers = new Headers();
-        if (body) {
-            headers.append("Content-Type", "application/json");
-        }
-        let response = fetch(href, {
-            method,
-            body,
-        });
+    // /**
+    //  * @param {Object} o
+    //  * @param {string} o.href
+    //  * @param {string} o.method
+    //  * @param {BodyInit} o.body
+    //  */
+    // #fetch({ href, method, body }) {
+    //     let headers = new Headers();
+    //     if (body) {
+    //         headers.append("Content-Type", "application/json");
+    //     }
+    //     let response = fetch(href, {
+    //         method,
+    //         body,
+    //     });
 
-        return response;
-    }
+    //     return response;
+    // }
 
     connectedCallback() {}
     disconnectedCallback() {}

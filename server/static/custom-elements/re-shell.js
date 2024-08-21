@@ -19,27 +19,10 @@ class ReShell extends HTMLElement {
 
             if (response.ok) {
                 let responseString = await response.text();
-                // let doc = new DOMParser().parseFromString(
-                //     `<body><template>${responseString}</template></body>`,
-                //     "text/html"
-                // ).querySelector("template");
-                // let template = document.createElement("template");
-                // template.innerHTML = responseString;
-                // let doc = template.content;
-                let strippedText = this.#extractReFragment(responseString);
-                console.log(strippedText);
+                let extracted = this.#extractFragments(responseString);
+                let fragments = extracted.map(this.makeFragment.bind(this));
 
-                let doc = this.#parseHTML(strippedText.content);
-
-                console.log(doc);
-
-                // console.log(doc.querySelector("re-fragment"));
-
-                // console.log(doc.querySelector("tr"));
-
-                // console.log(doc);
-
-                this.reTarget({ doc, target: strippedText.target });
+                this.reTarget(fragments);
 
                 if (this.hasAttribute("clear-form")) {
                     form.reset();
@@ -51,37 +34,56 @@ class ReShell extends HTMLElement {
             "re-action",
             /**@param {ReActionEvent} e*/
             async (e) => {
-                this.reTarget(e.data.doc);
+                this.reTarget(e.data.docs);
             }
         );
     }
 
-    #stripResponse(str) {}
+    /**
+     * @typedef {Object} TargetContent
+     * @prop {string} target
+     * @prop {string} content
+     */
 
-    #extractReFragment(htmlString) {
-        // Define a regex to match the <re-fragment> element and capture the target attribute
+    /**
+     * @param {string} partial
+     * @returns {TargetContent[]}
+     */
+    #extractFragments(partial) {
+        const result = [];
         const reFragmentRegex =
-            /<re-fragment\s+target="([^"]+)"\s*>([\s\S]*?)<\/re-fragment>/gi;
+            /<re-fragment target="([^"]+)">(.*?)<\/re-fragment>/gs;
+        let match;
+        while ((match = reFragmentRegex.exec(partial)) !== null) {
+            const target = match[1];
+            const content = match[2].trim();
+            result.push({ target, content });
+            partial = partial.replace(match[0], "");
+        }
 
-        let target = null;
-        let contentWithoutReFragment = htmlString;
+        const targetElementRegex =
+            /<([a-zA-Z0-9-]+)[^>]*target="([^"]+)"[^>]*>(.*?)<\/\1>/gs;
+        while ((match = targetElementRegex.exec(partial)) !== null) {
+            const tag = match[1];
+            const target = match[2];
+            const outerHtml = match[0];
+            result.push({ target, content: outerHtml });
+        }
 
-        // Use the regex to find and replace the <re-fragment> elements
-        contentWithoutReFragment = contentWithoutReFragment.replace(
-            reFragmentRegex,
-            function (match, targetAttr, innerContent) {
-                // Extract the target attribute value
-                target = targetAttr;
+        return result;
+    }
 
-                // Return the inner content without the <re-fragment> wrapper
-                return innerContent.trim();
-            }
-        );
+    /**
+     * @param {TargetContent} o
+     */
+    makeFragment(o) {
+        const frag = document.createDocumentFragment();
+        frag.title = o.target;
+        let parsed = this.#parseHTML(o.content);
 
-        return {
-            target: target, // Extracted target attribute value
-            content: contentWithoutReFragment, // HTML content without <re-fragment>
-        };
+        frag.replaceChildren(...parsed.children);
+
+        return frag;
     }
 
     #parseHTML(str) {
@@ -108,44 +110,17 @@ class ReShell extends HTMLElement {
     }
 
     /**
-     * @param {{doc:DocumentFragment,target:string}} docWithTarget
+     * @param {DocumentFragment[]} fragments
      */
-    reTarget(docWithTarget) {
-        let doc = docWithTarget.doc;
-        console.log(doc.querySelector("tr"));
-
-        let reTargetableElements = doc.querySelectorAll("[target]");
-        console.log(reTargetableElements);
-
-        reTargetableElements.forEach((element) => {
-            let targetName = element.getAttribute("target");
+    reTarget(fragments) {
+        fragments.forEach((fragment) => {
+            let targetName = fragment.title;
             let target = this.querySelector(`re-target[name="${targetName}"]`);
             if (target.hasAttribute("selector")) {
                 target = target.querySelector(target.getAttribute("selector"));
-                // console.log(target);
             }
 
-            let shouldConsume = target.hasAttribute("consume");
-
-            if (element.tagName.toLowerCase() == "re-fragment") {
-                let children = element.children;
-
-                console.log(element);
-
-                console.log(children);
-
-                if (shouldConsume) {
-                    // target.replaceChildren(element);
-                } else {
-                    // target.replaceChildren(...children);
-                }
-            }
-
-            if (shouldConsume) {
-                // target.replaceChildren(element);
-            } else {
-                // target.replaceChildren(element.cloneNode(true));
-            }
+            target.replaceChildren(...fragment.children);
         });
     }
 

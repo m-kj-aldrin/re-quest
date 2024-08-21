@@ -6,16 +6,19 @@ class ReTarget extends HTMLElement {
             "re-action",
             /**@param {ReActionEvent} e */
             (e) => {
-                this.#reTarget(e.data.doc);
+                if (!this.hasAttribute("name")) return;
+                this.#reTarget(e.data.docs);
             }
         );
     }
 
     /**
-     * @param {Document} doc
+     * @param {DocumentFragment[]} docs
      */
-    #reTarget(doc) {
-        this.replaceChildren(...doc.body.children);
+    #reTarget(docs) {
+        // this.replaceChildren(...docs.children);
+        // docs.forEach(fragment =>{
+        // })
     }
 
     connectedCallback() {}

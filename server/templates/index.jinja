@@ -2,7 +2,7 @@
 
 {% block main %}
 
-{# <form hx-post="/" hx-target="tbody" hx-swap="innerHTML" hx-ext="debug">
+{# <form hx-post="/" hx-target="tbody" hx-swap="innerHTML">
     <label>
         <span>name</span>:
         <input type="text" name="name">
@@ -26,6 +26,9 @@
 
 <re-shell>
 
+    <re-target name="test">
+        {% include "partials/n.jinja" %}
+    </re-target>
 
     <form action="" method="post">
         <label>
@@ -50,7 +53,6 @@
             </tbody>
         </table>
     </re-target>
-
 
 </re-shell>
 
