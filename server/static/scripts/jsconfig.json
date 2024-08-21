@@ -3,5 +3,6 @@
         "checkJs": true,
         "target": "ES2016",
         "lib": ["DOM", "DOM.Iterable", "ES2016"]
-    }
+    },
+    "exclude": ["./_old/**/*"]
 }
