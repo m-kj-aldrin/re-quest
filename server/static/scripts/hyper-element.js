@@ -98,33 +98,15 @@ class ReAction extends HTMLElement {
             let fragments = extracted.map(this.makeFragment.bind(this));
 
             this.#send(fragments);
-
-            // this.reTarget(fragments);
-
-            // if (this.hasAttribute("clear-form")) {
-            //     form.reset();
-            // }
         }
-
-        // if (response.ok) {
-        //     let responseString = await response.text();
-        //     // let doc = new DOMParser().parseFromString(
-        //     //     responseString,
-        //     //     "text/html"
-        //     // );
-
-        //     this.#send(doc);
-        // }
     }
 
     convertToJson(jsObjectString) {
-        // Step 1: Add double quotes around keys (anything that looks like a key)
         let jsonString = jsObjectString.replace(
             /([{,]\s*)([a-zA-Z_][a-zA-Z0-9_]*)(\s*:)/g,
             '$1"$2"$3'
         );
 
-        // Step 2: Ensure strings are properly quoted
         jsonString = jsonString.replace(
             /:\s*([a-zA-Z_][a-zA-Z0-9_]*)/g,
             (match, p1) => {
@@ -154,25 +136,6 @@ class ReAction extends HTMLElement {
         this.dispatchEvent(new ReActionEvent({ docs }));
     }
 
-    // /**
-    //  * @param {Object} o
-    //  * @param {string} o.href
-    //  * @param {string} o.method
-    //  * @param {BodyInit} o.body
-    //  */
-    // #fetch({ href, method, body }) {
-    //     let headers = new Headers();
-    //     if (body) {
-    //         headers.append("Content-Type", "application/json");
-    //     }
-    //     let response = fetch(href, {
-    //         method,
-    //         body,
-    //     });
-
-    //     return response;
-    // }
-
     connectedCallback() {}
     disconnectedCallback() {}
 }
@@ -192,11 +155,15 @@ class ReShell extends HTMLElement {
             let method = form.getAttribute("method") ?? form.method;
             let action = form.action;
 
+            console.log("request");
+
             let response = await this.#fetch({
                 path: action,
                 method,
                 body: formData,
             });
+
+            console.log("response");
 
             if (response.ok) {
                 let responseString = await response.text();
@@ -328,14 +295,21 @@ class ReTarget extends HTMLElement {
     /**
      * @param {DocumentFragment[]} docs
      */
-    #reTarget(docs) {
-        // this.replaceChildren(...docs.children);
-        // docs.forEach(fragment =>{
-        // })
-    }
+    #reTarget(docs) {}
 
     connectedCallback() {}
     disconnectedCallback() {}
 }
 
 customElements.define("re-target", ReTarget);
+
+window.addEventListener("DOMContentLoaded", (_) => {
+    document
+        .querySelectorAll("re-fragment")
+        .forEach((element) => element.remove());
+    let style = new CSSStyleSheet();
+    style.replaceSync(`:where(re-shell, re-target) {
+        display: contents;
+    }`);
+    document.adoptedStyleSheets.push(style);
+});
