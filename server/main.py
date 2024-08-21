@@ -48,13 +48,11 @@ def deleteUser(id):
         if user_to_remove:
             users.remove(user_to_remove)
 
-    t = render_template(
+    return render_template(
         "partials/users-rows.jinja",
         table_columns=table_columns,
         users=users,
-    ) + render_template("partials/n.jinja", n=randint(0, 1024))
-
-    return t
+    )
 
 
 if __name__ == "__main__":

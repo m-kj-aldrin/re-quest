@@ -313,3 +313,32 @@ window.addEventListener("DOMContentLoaded", (_) => {
     }`);
     document.adoptedStyleSheets.push(style);
 });
+
+// let xmlDoc = /**@type {XMLDocument} */ (
+//     new DOMParser().parseFromString("<root></root>", "application/xml")
+// );
+
+// /**
+//  *
+//  * @param {string} tag
+//  * @returns {Element}
+//  */
+// function createElement(tag) {
+//     return xmlDoc.createElement(tag);
+// }
+
+// /**
+//  * @param {string} name
+//  * @param {string} value
+//  */
+// function createItem(name, value) {
+//     let item = createElement("item");
+//     let nameEl = createElement("name");
+//     nameEl.textContent = name;
+//     let valueEl = createElement("value");
+//     valueEl.textContent = value;
+
+//     item.append(nameEl, valueEl);
+
+//     return item;
+// }
