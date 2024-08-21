@@ -31,13 +31,15 @@ class ReShell extends HTMLElement {
 
                 let doc = this.#parseHTML(strippedText.content);
 
+                console.log(doc);
+
                 // console.log(doc.querySelector("re-fragment"));
 
                 // console.log(doc.querySelector("tr"));
 
                 // console.log(doc);
 
-                this.reTarget(doc);
+                this.reTarget({ doc, target: strippedText.target });
 
                 if (this.hasAttribute("clear-form")) {
                     form.reset();
@@ -106,9 +108,10 @@ class ReShell extends HTMLElement {
     }
 
     /**
-     * @param {DocumentFragment} doc
+     * @param {{doc:DocumentFragment,target:string}} docWithTarget
      */
-    reTarget(doc) {
+    reTarget(docWithTarget) {
+        let doc = docWithTarget.doc;
         console.log(doc.querySelector("tr"));
 
         let reTargetableElements = doc.querySelectorAll("[target]");
