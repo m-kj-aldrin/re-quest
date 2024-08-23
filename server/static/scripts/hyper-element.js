@@ -1,317 +1,303 @@
 class ReActionEvent extends Event {
-    #data;
+  #data;
 
-    /**
-     * @param {Object} data
-     * @param {DocumentFragment[]} data.docs
-     */
-    constructor(data) {
-        super("re-action", { bubbles: true });
-        this.#data = data;
-    }
+  /**
+   * @param {Object} data
+   * @param {DocumentFragment[]} data.docs
+   */
+  constructor(data) {
+    super("re-action", { bubbles: true });
+    this.#data = data;
+  }
 
-    get data() {
-        return this.#data;
-    }
+  get data() {
+    return this.#data;
+  }
 }
 
 class ReAction extends HTMLElement {
-    constructor() {
-        super();
+  constructor() {
+    super();
 
-        this.addEventListener("click", this.action);
+    this.addEventListener("click", this.action);
+  }
+
+  /**
+   * @param {string} partial
+   * @returns {TargetContent[]}
+   */
+  #extractFragments(partial) {
+    const result = [];
+    const reFragmentRegex = /<re-fragment target="([^"]+)">(.*?)<\/re-fragment>/gs;
+    let match;
+    while ((match = reFragmentRegex.exec(partial)) !== null) {
+      const target = match[1];
+      const content = match[2].trim();
+      result.push({ target, content });
+      partial = partial.replace(match[0], "");
     }
 
-    /**
-     * @param {string} partial
-     * @returns {TargetContent[]}
-     */
-    #extractFragments(partial) {
-        const result = [];
-        const reFragmentRegex =
-            /<re-fragment target="([^"]+)">(.*?)<\/re-fragment>/gs;
-        let match;
-        while ((match = reFragmentRegex.exec(partial)) !== null) {
-            const target = match[1];
-            const content = match[2].trim();
-            result.push({ target, content });
-            partial = partial.replace(match[0], "");
-        }
-
-        const targetElementRegex =
-            /<([a-zA-Z0-9-]+)[^>]*target="([^"]+)"[^>]*>(.*?)<\/\1>/gs;
-        while ((match = targetElementRegex.exec(partial)) !== null) {
-            const tag = match[1];
-            const target = match[2];
-            const outerHtml = match[0];
-            result.push({ target, content: outerHtml });
-        }
-
-        return result;
+    const targetElementRegex = /<([a-zA-Z0-9-]+)[^>]*target="([^"]+)"[^>]*>(.*?)<\/\1>/gs;
+    while ((match = targetElementRegex.exec(partial)) !== null) {
+      const tag = match[1];
+      const target = match[2];
+      const outerHtml = match[0];
+      result.push({ target, content: outerHtml });
     }
 
-    /**
-     * @param {TargetContent} o
-     */
-    makeFragment(o) {
-        const frag = document.createDocumentFragment();
-        frag.title = o.target;
-        let parsed = this.#parseHTML(o.content);
+    return result;
+  }
 
-        frag.replaceChildren(...parsed.children);
+  /**
+   * @param {TargetContent} o
+   */
+  makeFragment(o) {
+    const frag = document.createDocumentFragment();
+    frag.title = o.target;
+    let parsed = this.#parseHTML(o.content);
 
-        return frag;
+    frag.replaceChildren(...parsed.children);
+
+    return frag;
+  }
+
+  #parseHTML(str) {
+    let parser = (s) => new DOMParser().parseFromString(s, "text/html");
+    const doc = parser("<body><template>" + str + "</template></body>").querySelector(
+      "template"
+    ).content;
+    return doc;
+  }
+
+  /**
+   * @param {Object} o
+   * @param {string} o.path
+   * @param {string} o.method
+   * @param {BodyInit} o.body
+   */
+  #fetch({ path, method, body }) {
+    let response = fetch(path, {
+      method,
+      body,
+    });
+
+    return response;
+  }
+  async action() {
+    let href = this.getAttribute("href") ?? "";
+    let method = this.getAttribute("method") ?? "get";
+    let data = method == "get" ? undefined : this.#getData();
+
+    let response = await this.#fetch({ path: href, method, body: data });
+
+    if (response.ok) {
+      let responseString = await response.text();
+      let extracted = this.#extractFragments(responseString);
+      let fragments = extracted.map(this.makeFragment.bind(this));
+
+      this.#send(fragments);
     }
+  }
 
-    #parseHTML(str) {
-        let parser = (s) => new DOMParser().parseFromString(s, "text/html");
-        const doc = parser(
-            "<body><template>" + str + "</template></body>"
-        ).querySelector("template").content;
-        return doc;
+  convertToJson(jsObjectString) {
+    let jsonString = jsObjectString.replace(/([{,]\s*)([a-zA-Z_][a-zA-Z0-9_]*)(\s*:)/g, '$1"$2"$3');
+
+    jsonString = jsonString.replace(/:\s*([a-zA-Z_][a-zA-Z0-9_]*)/g, (match, p1) => {
+      if (!["true", "false", "null"].includes(p1)) {
+        return `: "${p1}"`;
+      }
+      return match;
+    });
+
+    return jsonString;
+  }
+
+  #getData() {
+    let dataAttr = this.getAttribute("data");
+    try {
+      return this.convertToJson(dataAttr);
+    } catch (error) {
+      return {};
     }
+  }
 
-    /**
-     * @param {Object} o
-     * @param {string} o.path
-     * @param {string} o.method
-     * @param {BodyInit} o.body
-     */
-    #fetch({ path, method, body }) {
-        let response = fetch(path, {
-            method,
-            body,
-        });
+  /**
+   * @param {DocumentFragment[]} docs
+   */
+  #send(docs) {
+    this.dispatchEvent(new ReActionEvent({ docs }));
+  }
 
-        return response;
-    }
-    async action() {
-        let href = this.getAttribute("href") ?? "";
-        let method = this.getAttribute("method") ?? "get";
-        let data = method == "get" ? undefined : this.#getData();
-
-        let response = await this.#fetch({ path: href, method, body: data });
-
-        if (response.ok) {
-            let responseString = await response.text();
-            let extracted = this.#extractFragments(responseString);
-            let fragments = extracted.map(this.makeFragment.bind(this));
-
-            this.#send(fragments);
-        }
-    }
-
-    convertToJson(jsObjectString) {
-        let jsonString = jsObjectString.replace(
-            /([{,]\s*)([a-zA-Z_][a-zA-Z0-9_]*)(\s*:)/g,
-            '$1"$2"$3'
-        );
-
-        jsonString = jsonString.replace(
-            /:\s*([a-zA-Z_][a-zA-Z0-9_]*)/g,
-            (match, p1) => {
-                if (!["true", "false", "null"].includes(p1)) {
-                    return `: "${p1}"`;
-                }
-                return match;
-            }
-        );
-
-        return jsonString;
-    }
-
-    #getData() {
-        let dataAttr = this.getAttribute("data");
-        try {
-            return this.convertToJson(dataAttr);
-        } catch (error) {
-            return {};
-        }
-    }
-
-    /**
-     * @param {DocumentFragment[]} docs
-     */
-    #send(docs) {
-        this.dispatchEvent(new ReActionEvent({ docs }));
-    }
-
-    connectedCallback() {}
-    disconnectedCallback() {}
+  connectedCallback() {}
+  disconnectedCallback() {}
 }
 
 customElements.define("re-action", ReAction);
 
 class ReShell extends HTMLElement {
-    constructor() {
-        super();
+  constructor() {
+    super();
 
-        this.addEventListener("submit", async (e) => {
-            if (!(e.target instanceof HTMLFormElement)) return;
-            e.preventDefault();
+    this.addEventListener("submit", async (e) => {
+      if (!(e.target instanceof HTMLFormElement)) return;
+      e.preventDefault();
 
-            let form = e.target;
-            let formData = new FormData(form);
-            let method = form.getAttribute("method") ?? form.method;
-            let action = form.action;
+      let form = e.target;
+      let formData = new FormData(form);
+      let method = form.getAttribute("method") ?? form.method;
+      let action = form.action;
 
-            console.log("request");
+      console.log("request");
 
-            let response = await this.#fetch({
-                path: action,
-                method,
-                body: formData,
-            });
+      let response = await this.#fetch({
+        path: action,
+        method,
+        body: formData,
+      });
 
-            console.log("response");
+      if (response.ok) {
+        let responseString = await response.text();
+        let extracted = this.#extractFragments(responseString);
+        let fragments = extracted.map(this.makeFragment.bind(this));
 
-            if (response.ok) {
-                let responseString = await response.text();
-                let extracted = this.#extractFragments(responseString);
-                let fragments = extracted.map(this.makeFragment.bind(this));
+        this.reTarget(fragments);
 
-                this.reTarget(fragments);
-
-                if (this.hasAttribute("clear-form")) {
-                    form.reset();
-                }
-            }
-        });
-
-        this.addEventListener(
-            "re-action",
-            /**@param {ReActionEvent} e*/
-            async (e) => {
-                this.reTarget(e.data.docs);
-            }
-        );
-    }
-
-    /**
-     * @typedef {Object} TargetContent
-     * @prop {string} target
-     * @prop {string} content
-     */
-
-    /**
-     * @param {string} partial
-     * @returns {TargetContent[]}
-     */
-    #extractFragments(partial) {
-        const result = [];
-        const reFragmentRegex =
-            /<re-fragment target="([^"]+)">(.*?)<\/re-fragment>/gs;
-        let match;
-        while ((match = reFragmentRegex.exec(partial)) !== null) {
-            const target = match[1];
-            const content = match[2].trim();
-            result.push({ target, content });
-            partial = partial.replace(match[0], "");
+        if (this.hasAttribute("clear-form")) {
+          form.reset();
         }
+      }
+    });
 
-        const targetElementRegex =
-            /<([a-zA-Z0-9-]+)[^>]*target="([^"]+)"[^>]*>(.*?)<\/\1>/gs;
-        while ((match = targetElementRegex.exec(partial)) !== null) {
-            const tag = match[1];
-            const target = match[2];
-            const outerHtml = match[0];
-            result.push({ target, content: outerHtml });
-        }
+    this.addEventListener(
+      "re-action",
+      /**@param {ReActionEvent} e*/
+      async (e) => {
+        this.reTarget(e.data.docs);
+      }
+    );
+  }
 
-        return result;
+  /**
+   * @typedef {Object} TargetContent
+   * @prop {string} target
+   * @prop {string} content
+   */
+
+  /**
+   * @param {string} partial
+   * @returns {TargetContent[]}
+   */
+  #extractFragments(partial) {
+    const result = [];
+    const reFragmentRegex = /<re-fragment target="([^"]+)">(.*?)<\/re-fragment>/gs;
+    let match;
+    while ((match = reFragmentRegex.exec(partial)) !== null) {
+      const target = match[1];
+      const content = match[2].trim();
+      result.push({ target, content });
+      partial = partial.replace(match[0], "");
     }
 
-    /**
-     * @param {TargetContent} o
-     */
-    makeFragment(o) {
-        const frag = document.createDocumentFragment();
-        frag.title = o.target;
-        let parsed = this.#parseHTML(o.content);
-
-        frag.replaceChildren(...parsed.children);
-
-        return frag;
+    const targetElementRegex = /<([a-zA-Z0-9-]+)[^>]*target="([^"]+)"[^>]*>(.*?)<\/\1>/gs;
+    while ((match = targetElementRegex.exec(partial)) !== null) {
+      const tag = match[1];
+      const target = match[2];
+      const outerHtml = match[0];
+      result.push({ target, content: outerHtml });
     }
 
-    #parseHTML(str) {
-        let parser = (s) => new DOMParser().parseFromString(s, "text/html");
-        const doc = parser(
-            "<body><template>" + str + "</template></body>"
-        ).querySelector("template").content;
-        return doc;
-    }
+    return result;
+  }
 
-    /**
-     * @param {Object} o
-     * @param {string} o.path
-     * @param {string} o.method
-     * @param {BodyInit} o.body
-     */
-    #fetch({ path, method, body }) {
-        let response = fetch(path, {
-            method,
-            body,
-        });
+  /**
+   * @param {TargetContent} o
+   */
+  makeFragment(o) {
+    const frag = document.createDocumentFragment();
+    frag.title = o.target;
+    let parsed = this.#parseHTML(o.content);
 
-        return response;
-    }
+    frag.replaceChildren(...parsed.children);
 
-    /**
-     * @param {DocumentFragment[]} fragments
-     */
-    reTarget(fragments) {
-        fragments.forEach((fragment) => {
-            let targetName = fragment.title;
-            let target = this.querySelector(`re-target[name="${targetName}"]`);
-            if (target.hasAttribute("selector")) {
-                target = target.querySelector(target.getAttribute("selector"));
-            }
+    return frag;
+  }
 
-            target.replaceChildren(...fragment.children);
-        });
-    }
+  #parseHTML(str) {
+    let parser = (s) => new DOMParser().parseFromString(s, "text/html");
+    const doc = parser("<body><template>" + str + "</template></body>").querySelector(
+      "template"
+    ).content;
+    return doc;
+  }
 
-    connectedCallback() {}
-    disconnectedCallback() {}
+  /**
+   * @param {Object} o
+   * @param {string} o.path
+   * @param {string} o.method
+   * @param {BodyInit} o.body
+   */
+  #fetch({ path, method, body }) {
+    let response = fetch(path, {
+      method,
+      body,
+    });
+
+    return response;
+  }
+
+  /**
+   * @param {DocumentFragment[]} fragments
+   */
+  reTarget(fragments) {
+    fragments.forEach((fragment) => {
+      let targetName = fragment.title;
+      let target = this.querySelector(`re-target[name="${targetName}"]`);
+      if (target.hasAttribute("selector")) {
+        target = target.querySelector(target.getAttribute("selector"));
+      }
+
+      target.replaceChildren(...fragment.children);
+    });
+  }
+
+  connectedCallback() {}
+  disconnectedCallback() {}
 }
 
 customElements.define("re-shell", ReShell);
 
 class ReTarget extends HTMLElement {
-    constructor() {
-        super();
+  constructor() {
+    super();
 
-        this.addEventListener(
-            "re-action",
-            /**@param {ReActionEvent} e */
-            (e) => {
-                if (!this.hasAttribute("name")) return;
-                this.#reTarget(e.data.docs);
-            }
-        );
-    }
+    this.addEventListener(
+      "re-action",
+      /**@param {ReActionEvent} e */
+      (e) => {
+        if (!this.hasAttribute("name")) return;
+        this.#reTarget(e.data.docs);
+      }
+    );
+  }
 
-    /**
-     * @param {DocumentFragment[]} docs
-     */
-    #reTarget(docs) {}
+  /**
+   * @param {DocumentFragment[]} docs
+   */
+  #reTarget(docs) {}
 
-    connectedCallback() {}
-    disconnectedCallback() {}
+  connectedCallback() {}
+  disconnectedCallback() {}
 }
 
 customElements.define("re-target", ReTarget);
 
 window.addEventListener("DOMContentLoaded", (_) => {
-    document
-        .querySelectorAll("re-fragment")
-        .forEach((element) => element.remove());
-    let style = new CSSStyleSheet();
-    style.replaceSync(`:where(re-shell, re-target) {
+  document.querySelectorAll("re-fragment").forEach((element) => element.remove());
+  let style = new CSSStyleSheet();
+  style.replaceSync(`:where(re-shell, re-target) {
         display: contents;
     }`);
-    document.adoptedStyleSheets.push(style);
+  document.adoptedStyleSheets.push(style);
 });
 
 // let xmlDoc = /**@type {XMLDocument} */ (

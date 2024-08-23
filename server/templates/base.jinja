@@ -2,19 +2,29 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='style/main.css') }}">
-    <script defer src="{{ url_for('static', filename='scripts/hyper-element.js') }}"></script>
-    <title>re-shell</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style/main.css') }}">
+  <script defer src="{{ url_for('static', filename='scripts/hyper-element.js') }}"></script>
+  <title>re-shell</title>
 </head>
 
 <body>
 
-    {% block main %}
 
-    {% endblock main %}
+  <div class="wrapper">
+    <header>
+      <h1>User DB</h1>
+    </header>
+    <main>
+      {% block main %}
+      {% endblock main %}
+    </main>
+    <footer>
+      <p>footer</p>
+    </footer>
+  </div>
 
 </body>
 

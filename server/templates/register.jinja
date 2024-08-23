@@ -1,0 +1,25 @@
+{% extends "base.jinja" %}
+
+{% block main %}
+
+<h2>Register</h2>
+
+<!-- Display error message if it exists -->
+{% if error %}
+<p style="color: red;">{{ error }}</p>
+{% endif %}
+
+<form method="POST" action="/register">
+  <label for="username">Username:</label>
+  <input type="text" name="username" required><br><br>
+
+  <label for="password">Password:</label>
+  <input type="password" name="password" required><br><br>
+
+  <button type="submit">Register</button>
+</form>
+
+<p>Already have an account? <a href="/">Login here</a>.</p>
+
+<p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Tempora quas quidem vitae reprehenderit natus incidunt dolores doloremque. Quas assumenda ut architecto eligendi mollitia enim a officiis nulla totam consectetur fugiat reiciendis pariatur ad commodi, cupiditate consequatur debitis dolorem iure beatae ipsam consequuntur exercitationem blanditiis voluptas eos. Enim similique tempore minima dignissimos tenetur a, eum maxime aspernatur dicta suscipit nemo! Deserunt, ex. Quae, iusto eos, ipsam vel, deleniti maiores accusantium ab natus labore beatae quis? Alias corrupti laboriosam voluptatem vero delectus illo magni, impedit earum, doloremque dolor perspiciatis consequatur dolore facilis aperiam molestias enim odio suscipit maiores dignissimos repellat aliquam cum! Voluptatem ut repellat alias sunt iusto saepe perferendis quia maiores nisi recusandae quibusdam aut itaque fuga, labore maxime placeat possimus temporibus accusamus sed beatae magni. Consectetur earum hic debitis deserunt dignissimos, cupiditate veniam sit quisquam nostrum repellendus autem facere minima, dolore laboriosam facilis eos, reiciendis ipsum animi repellat inventore architecto expedita. Dolores amet perspiciatis alias odit nesciunt necessitatibus, omnis neque architecto velit. Pariatur reiciendis explicabo modi? Consequuntur quidem a rerum dolorem inventore, odit dolor accusantium tempore soluta, error esse ipsa expedita sunt! Voluptatibus eius, a officia veniam inventore voluptates quas illo alias odio pariatur consequatur recusandae mollitia earum aspernatur voluptatem? Saepe perferendis ad ut. Ratione voluptate accusantium delectus sunt veniam, at assumenda vitae, et quam unde iste quis suscipit? Unde impedit iste, provident sunt amet ducimus culpa illum labore doloremque, ex asperiores totam esse ut accusamus quam. Eius veniam expedita eligendi facere delectus illum rerum recusandae doloribus maiores, est dolorem reprehenderit fugit mollitia nihil enim nobis laudantium quis voluptatibus aliquam id tenetur libero magnam! Veritatis nam dolore ea consequuntur dolor quia quas blanditiis, exercitationem expedita, inventore ipsam quaerat optio eaque necessitatibus dolorem ducimus quam vitae, omnis sunt dolores! Ab quisquam adipisci numquam quasi impedit animi nemo a earum doloremque soluta, harum eveniet similique optio porro, laudantium tempora non quam aliquid? Laborum sed iusto officiis inventore quo distinctio? Delectus explicabo voluptatum quos hic veritatis vitae ipsam non illo assumenda placeat numquam, expedita corporis at sit exercitationem, voluptate cum? Fuga tempora cupiditate, minus iure at tenetur consequatur error et culpa eos! Eligendi, praesentium laboriosam ducimus obcaecati adipisci maiores aut quisquam ab. Debitis eligendi laborum similique veniam rem ipsa numquam vel nesciunt nihil accusamus ea ullam animi, mollitia quidem. Officia, sed illo a illum obcaecati fugit dolorum voluptatum? Ipsa, suscipit accusamus tempora impedit vero iste totam assumenda quasi officia. Veniam quaerat sint ipsum quisquam similique atque perspiciatis praesentium ad provident at nulla optio voluptatibus aliquam suscipit quibusdam aut, beatae velit quae explicabo incidunt ut dicta! Ullam ratione neque dicta at, voluptas veritatis sunt asperiores reiciendis molestias ex dignissimos earum, esse tempore exercitationem et voluptatem commodi praesentium explicabo consectetur consequatur quod fuga distinctio. Non ullam, in, neque eligendi veritatis a nam fugit pariatur recusandae accusantium minus laborum, ut minima adipisci mollitia omnis magni! Vel sunt perspiciatis soluta natus expedita voluptates magni totam quod ex assumenda voluptate laborum quaerat, vitae ipsa eaque saepe aut veniam magnam esse voluptatibus. Voluptas in recusandae, quisquam odit nobis perferendis atque impedit unde dolores voluptatum obcaecati voluptates maiores accusamus minus? Qui, minima.</p>
+{% endblock main %}

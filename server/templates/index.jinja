@@ -1,4 +1,4 @@
-{% include "base.jinja" %}
+{# {% include "base.jinja" %}
 
 {% block main %}
 
@@ -6,34 +6,38 @@
 
 <re-shell>
 
-    <re-target name="test">
-        {% include "partials/n.jinja" %}
-    </re-target>
+  <re-target name="test">
+    {% include "partials/n.jinja" %}
+  </re-target>
 
-    <form action="" method="post">
-        <label>
-            <span>name</span>:
-            <input type="text" name="name">
-        </label>
-    </form>
+  <form action="" method="post">
+    <label>
+      <span>name</span>:
+      <input type="text" name="name">
+    </label>
+  </form>
 
-    <br>
+  <br>
 
-    <re-target name="users-rows" selector="tbody">
-        <table>
-            <thead>
-                <tr>
-                    {% for key in table_columns %}
-                    <th>{{ key }}</th>
-                    {% endfor %}
-                </tr>
-            </thead>
-            <tbody>
-                {% include "partials/users-rows.jinja" %}
-            </tbody>
-        </table>
-    </re-target>
+  <re-target name="users-rows" selector="tbody">
+    <table>
+      <thead>
+        <tr>
+          {% for key in table_columns %}
+          <th>{{ key }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% include "partials/users-rows.jinja" %}
+      </tbody>
+    </table>
+  </re-target>
 
 </re-shell>
 
-{% endblock main %}
+{% endblock main %} #}
+
+{% extends "base.jinja" %}
+
+<h1>Index!</h1>

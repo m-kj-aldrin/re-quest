@@ -1,44 +1,64 @@
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding: 8px;
+}
+
+main {
+  flex: 1;
 }
 
 body {
-    margin: 0;
-    padding: 8px;
-    font-family: sans-serif;
+  margin: 0;
+  /* padding: 8px; */
+  font-family: sans-serif;
 }
 
 :where(h1, h2, h3, h4) {
-    font-family: Georgia, "Times New Roman", Times, serif;
+  font-family: Georgia, "Times New Roman", Times, serif;
 }
 
 [role="button"] {
-    display: inline-block;
-    border-radius: 1px;
-    padding-block: 0.125em;
-    padding-inline: 0.35em;
-    line-height: 1;
-    border: 1px currentColor solid;
-    cursor: pointer;
+  display: inline-block;
+  border-radius: 1px;
+  padding-block: 0.125em;
+  padding-inline: 0.35em;
+  line-height: 1;
+  border: 1px currentColor solid;
+  cursor: pointer;
 }
 [role="button"]:active {
-    background-color: #eee;
+  background-color: #eee;
 }
 
 table {
-    border-collapse: collapse;
+  border-collapse: collapse;
 }
 
 table thead {
-    border-bottom: 1px currentColor solid;
+  border-bottom: 1px currentColor solid;
 }
 
 table tr {
-    border-bottom: 1px currentColor solid;
+  border-bottom: 1px currentColor solid;
 }
 
 table td:not(:last-of-type) {
-    border-right: 1px currentColor solid;
+  border-right: 1px currentColor solid;
 }
 table td {
+}
+
+footer {
+  text-align: center;
 }
