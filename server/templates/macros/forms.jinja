@@ -1,0 +1,6 @@
+{% macro input_with_label(id, label_text, input_type='text', value='', placeholder='') %}
+<label>
+    <span>{{ label_text }}</span>
+    <input type="{{ input_type }}" id="{{ id }}" name="{{ id }}" value="{{ value }}" placeholder="{{ placeholder }}">
+</label>
+{% endmacro %}

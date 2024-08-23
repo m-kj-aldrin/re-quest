@@ -1,43 +1,6 @@
-{# {% include "base.jinja" %}
+{% extends "base.jinja" %}
 
 {% block main %}
 
-<h1>Users</h1>
 
-<re-shell>
-
-  <re-target name="test">
-    {% include "partials/n.jinja" %}
-  </re-target>
-
-  <form action="" method="post">
-    <label>
-      <span>name</span>:
-      <input type="text" name="name">
-    </label>
-  </form>
-
-  <br>
-
-  <re-target name="users-rows" selector="tbody">
-    <table>
-      <thead>
-        <tr>
-          {% for key in table_columns %}
-          <th>{{ key }}</th>
-          {% endfor %}
-        </tr>
-      </thead>
-      <tbody>
-        {% include "partials/users-rows.jinja" %}
-      </tbody>
-    </table>
-  </re-target>
-
-</re-shell>
-
-{% endblock main %} #}
-
-{% extends "base.jinja" %}
-
-<h1>Index!</h1>
+{% endblock main %}

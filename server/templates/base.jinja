@@ -15,16 +15,21 @@
 
   <div class="wrapper">
     <header>
-      <h1>User DB</h1>
+      <h1>Medlems-service</h1>
+      {% include "partials/site_nav.jinja" %}
     </header>
     <main>
       {% block main %}
       {% endblock main %}
     </main>
     <footer>
-      <p>footer</p>
+      <span>footer</span>
     </footer>
   </div>
+
+  {% block scripts %}
+
+  {% endblock scripts %}
 
 </body>
 

@@ -1,0 +1,21 @@
+{% set routes = [] %}
+{% if not session.get("session_id") %}
+{% set routes = [
+{'route':'login','label':'logga in'},
+{'route':'choose_document','label':'Skriv ut dokument'},
+]%}
+{% else %}
+{% set routes = [
+{'route':'logout','label':'logga ut'},
+{'route':'profile','label':'profil'},
+{'route':'choose_document','label':'Skriv ut dokument'},
+] %}
+{% endif %}
+<nav>
+    {% for route in routes %}
+    <a href="{{ url_for(route.route) }}">{{ route.label }}</a>
+    {% if not loop.last %}
+    <span>&VerticalLine;</span>
+    {% endif %}
+    {% endfor %}
+</nav>

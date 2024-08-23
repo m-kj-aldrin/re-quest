@@ -1,0 +1,11 @@
+{% extends "partials/base_form.jinja" %}
+
+{% block form_fields %}
+
+<fieldset>
+    <legend>Utbetalnings mottagare</legend>
+    {{ forms.input_with_label('behallning','Behållning') }}
+    {{ forms.input_with_label('forenings_avslut','Förenings medlemskap?',input_type='checkbox') }}
+</fieldset>
+
+{% endblock form_fields %}

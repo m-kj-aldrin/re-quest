@@ -1,0 +1,29 @@
+<form id="document-form" method="POST" action="{{ url_for('print_document', template_name=template_name) }}">
+    {{ forms[0].hidden_tag() }}
+
+    {% for form in forms %}
+    <fieldset>
+        <legend>{{form.label}}</legend>
+        {% for field in form %}
+
+        {% if field.type != 'CSRFTokenField' %}
+        <div>
+            <label for="{{ field.id }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}
+            <ul class="errors">
+                {% for error in field.errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% endfor %}
+    </fieldset>
+    <br>
+    {% endfor %}
+
+    <input type="submit" value="Skriv ut">
+</form>

@@ -1,0 +1,32 @@
+{% import 'macros/forms.jinja' as forms %}
+
+<form id="document-form" method="POST" action="{{ url_for('print_document', template_name=template_name) }}">
+
+    <fieldset>
+        <legend>Post mottagare</legend>
+        {{ forms.input_with_label('namn_mottagare','Mottagare namn') }}
+        {{ forms.input_with_label('c_o','c/o') }}
+        {{ forms.input_with_label('gata','Gata') }}
+        {{ forms.input_with_label('post_nr','Post nummer') }}
+        {{ forms.input_with_label('post_ord','Postort') }}
+    </fieldset>
+
+    <br>
+
+    <fieldset>
+        <legend>Kund uppgifter</legend>
+        {{ forms.input_with_label('person_nr','Personnummer') }}
+        {{ forms.input_with_label('mmid','mmid') }}
+        {{ forms.input_with_label('namn_medlem','namn') }}
+        {{ forms.input_with_label('forening','Förening') }}
+    </fieldset>
+
+    <br>
+
+    {% block form_fields %}{% endblock %}
+
+    <br>
+
+    <button type="submit">Print Document</button>
+
+</form>

@@ -1,0 +1,45 @@
+{% extends "base.jinja" %}
+
+
+{% block main %}
+<h3>{{template_name | upper}}</h3>
+{% include "partials/document_form.jinja" %}
+{% endblock main %}
+
+{% block scripts %}
+<script>
+    document.addEventListener("paste", (e) => {
+        if (e.target instanceof HTMLInputElement) {
+            return;
+        }
+
+        let data = e.clipboardData.getData("text/plain").split(",");
+
+        if (data[0].includes("c/o")) {
+            let [namn, c_o] = data[0].split("c/o")
+            data[0] = namn.trim()
+            data.splice(1, 0, c_o.trim())
+        } else {
+            data.splice(1, 0, "")
+        }
+        data.splice(-1, 0, data[0])
+
+        let form = document.getElementById("document-form")
+
+        form.querySelectorAll("input:not([type='hidden'])").forEach((inputElement, i) => {
+            let value = data?.[i]
+            console.log(inputElement, value)
+            if (value) {
+                console.log(value)
+                value = value.charAt(0).toUpperCase() + value.slice(1).toLowerCase()
+                inputElement.value = value
+            }
+        })
+
+        setTimeout(_ => {
+            form.querySelector("#behallning")?.focus()
+        }, 0)
+
+    });
+</script>
+{% endblock scripts %}
